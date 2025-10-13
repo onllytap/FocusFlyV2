@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Widget from "components/widget/Widget";
 import ActiveHabitsTable from "./components/ActiveHabitsTable";
 import ArchivedHabitsTable from "./components/ArchivedHabitsTable";
+import AddHabitModal from "components/modal/AddHabitModal";
+import { useToast } from "components/toast/ToastContext";
 import {
   MdCheckCircle,
   MdTrendingUp,
@@ -15,6 +17,14 @@ import { IoMdTime } from "react-icons/io";
 const HabitsManagement = () => {
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [showAddHabitModal, setShowAddHabitModal] = useState(false);
+  const toast = useToast();
+
+  const handleFilterChange = (filterId) => {
+    setActiveFilter(filterId);
+    const filter = filters.find(f => f.id === filterId);
+    toast.info(`Filtré par ${filter.label}`);
+  };
 
   const filters = [
     { id: "all", label: "Toutes", count: 7 },
@@ -70,15 +80,36 @@ const HabitsManagement = () => {
       {/* Filters & Search Bar */}
       <div className="mt-6 flex flex-col gap-4 rounded-[20px] bg-white p-5 shadow-3xl shadow-shadow-500 dark:bg-navy-800 dark:shadow-none md:flex-row md:items-center md:justify-between">
         {/* Search Bar */}
-        <div className="flex w-full items-center gap-2 rounded-lg bg-gray-50 px-4 py-3 dark:bg-white/5 md:w-1/3">
-          <MdSearch className="h-5 w-5 text-gray-400" />
+        <div className="group flex w-full items-center gap-2 rounded-lg bg-gray-50 px-4 py-3 transition-all duration-200 hover:bg-gray-100 focus-within:ring-2 focus-within:ring-brand-500/50 dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:ring-brand-500/50 md:w-1/3">
+          <MdSearch className="h-5 w-5 text-gray-400 transition-colors group-focus-within:text-brand-500" />
           <input
             type="text"
             placeholder="Rechercher une habitude..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-transparent text-sm text-navy-700 outline-none placeholder:text-gray-400 dark:text-white"
+            className="w-full bg-transparent text-sm text-navy-700 outline-none placeholder:text-gray-400 dark:text-white dark:placeholder:text-gray-500"
           />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm("")}
+              className="rounded-full p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600 dark:hover:bg-white/20 dark:hover:text-white"
+              aria-label="Clear search"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
         </div>
 
         {/* Filters */}
@@ -87,7 +118,7 @@ const HabitsManagement = () => {
           {filters.map((filter) => (
             <button
               key={filter.id}
-              onClick={() => setActiveFilter(filter.id)}
+              onClick={() => handleFilterChange(filter.id)}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                 activeFilter === filter.id
                   ? "bg-brand-500 text-white shadow-md shadow-brand-500/30"
@@ -110,7 +141,7 @@ const HabitsManagement = () => {
 
         {/* Add Habit Button */}
         <button
-          onClick={() => console.log("Add new habit")}
+          onClick={() => setShowAddHabitModal(true)}
           className="flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-3 text-sm font-bold text-white shadow-md shadow-brand-500/30 transition-all hover:bg-brand-600 hover:shadow-lg hover:shadow-brand-500/40"
         >
           <MdAdd className="h-5 w-5" />
@@ -157,6 +188,12 @@ const HabitsManagement = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Habit Modal */}
+      <AddHabitModal
+        isOpen={showAddHabitModal}
+        onClose={() => setShowAddHabitModal(false)}
+      />
     </div>
   );
 };

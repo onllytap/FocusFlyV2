@@ -2,6 +2,7 @@ import React from "react";
 import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
 import Progress from "components/progress";
+import { useToast } from "components/toast/ToastContext";
 import {
   MdCheckCircle,
   MdEdit,
@@ -27,6 +28,7 @@ const columnHelper = createColumnHelper();
 
 export default function ActiveHabitsTable() {
   const [sorting, setSorting] = React.useState([]);
+  const toast = useToast();
 
   // Mock data - habitudes actives
   const tableData = [
@@ -129,6 +131,23 @@ export default function ActiveHabitsTable() {
       case "productivity": return "text-orange-500 bg-orange-50 dark:bg-orange-900/20";
       case "learning": return "text-pink-500 bg-pink-50 dark:bg-pink-900/20";
       default: return "text-gray-500 bg-gray-50 dark:bg-gray-900/20";
+    }
+  };
+
+  const handleEdit = (habitId) => {
+    toast.info("Mode édition activé ✏️");
+    // TODO: Open edit modal
+  };
+
+  const handleArchive = (habitId) => {
+    toast.warning("Habitude archivée 📦");
+    // TODO: Archive habit logic
+  };
+
+  const handleDelete = (habitId) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette habitude ?")) {
+      toast.error("Habitude supprimée 🗑️");
+      // TODO: Delete habit logic
     }
   };
 
@@ -235,22 +254,22 @@ export default function ActiveHabitsTable() {
       cell: (info) => (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => console.log("Edit habit", info.getValue())}
-            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-blue-500 dark:text-gray-400 dark:hover:bg-white/10"
+            onClick={() => handleEdit(info.getValue())}
+            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-blue-500 hover:scale-110 dark:text-gray-400 dark:hover:bg-white/10"
             title="Éditer"
           >
             <MdEdit className="h-5 w-5" />
           </button>
           <button
-            onClick={() => console.log("Archive habit", info.getValue())}
-            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-orange-500 dark:text-gray-400 dark:hover:bg-white/10"
+            onClick={() => handleArchive(info.getValue())}
+            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-orange-500 hover:scale-110 dark:text-gray-400 dark:hover:bg-white/10"
             title="Archiver"
           >
             <MdArchive className="h-5 w-5" />
           </button>
           <button
-            onClick={() => console.log("Delete habit", info.getValue())}
-            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-red-500 dark:text-gray-400 dark:hover:bg-white/10"
+            onClick={() => handleDelete(info.getValue())}
+            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-red-500 hover:scale-110 dark:text-gray-400 dark:hover:bg-white/10"
             title="Supprimer"
           >
             <MdDelete className="h-5 w-5" />

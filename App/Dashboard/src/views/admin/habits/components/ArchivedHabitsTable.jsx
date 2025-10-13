@@ -1,6 +1,7 @@
 import React from "react";
 import CardMenu from "components/card/CardMenu";
 import Card from "components/card";
+import { useToast } from "components/toast/ToastContext";
 import { MdRestore, MdDelete, MdCheckCircle, MdCancel } from "react-icons/md";
 
 import {
@@ -15,6 +16,7 @@ const columnHelper = createColumnHelper();
 
 export default function ArchivedHabitsTable() {
   const [sorting, setSorting] = React.useState([]);
+  const toast = useToast();
 
   // Mock data - habitudes archivées
   const tableData = [
@@ -59,6 +61,18 @@ export default function ArchivedHabitsTable() {
       status: "abandoned"
     },
   ];
+
+  const handleRestore = (habitId) => {
+    toast.success("Habitude restaurée avec succès ! 🎉");
+    // TODO: Restore habit logic
+  };
+
+  const handleDeletePermanently = (habitId) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer définitivement cette habitude ? Cette action est irréversible.")) {
+      toast.error("Habitude supprimée définitivement 🗑️");
+      // TODO: Delete habit permanently logic
+    }
+  };
 
   const columns = [
     columnHelper.accessor("habit", {
@@ -142,15 +156,15 @@ export default function ArchivedHabitsTable() {
       cell: (info) => (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => console.log("Restore habit", info.getValue())}
-            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-green-500 dark:text-gray-400 dark:hover:bg-white/10"
+            onClick={() => handleRestore(info.getValue())}
+            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-green-500 hover:scale-110 dark:text-gray-400 dark:hover:bg-white/10"
             title="Restaurer"
           >
             <MdRestore className="h-5 w-5" />
           </button>
           <button
-            onClick={() => console.log("Delete permanently", info.getValue())}
-            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-red-500 dark:text-gray-400 dark:hover:bg-white/10"
+            onClick={() => handleDeletePermanently(info.getValue())}
+            className="rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100 hover:text-red-500 hover:scale-110 dark:text-gray-400 dark:hover:bg-white/10"
             title="Supprimer définitivement"
           >
             <MdDelete className="h-5 w-5" />
